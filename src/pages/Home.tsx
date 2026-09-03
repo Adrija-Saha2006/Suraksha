@@ -1,4 +1,6 @@
 import { CoverageGrid } from '../components/dashboard/CoverageGrid'
+import { DashboardError } from '../components/dashboard/DashboardError'
+import { DashboardSkeleton } from '../components/dashboard/DashboardSkeleton'
 import { GreetingHeader } from '../components/dashboard/GreetingHeader'
 import { NomineeCard } from '../components/dashboard/NomineeCard'
 import { PolicySummaryCard } from '../components/dashboard/PolicySummaryCard'
@@ -7,7 +9,11 @@ import { RecentActivity } from '../components/dashboard/RecentActivity'
 import { useDashboardData } from '../data/useDashboardData'
 
 export default function Home() {
-  const { data } = useDashboardData()
+  const { data, isLoading, error } = useDashboardData()
+
+  if (isLoading) return <DashboardSkeleton />
+  if (error || !data) return <DashboardError />
+
   const { user, policy, nominee, recentActivity } = data
 
   return (
