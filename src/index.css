@@ -1,0 +1,63 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans:
+    'KH Teka', 'Barlow Condensed', 'Archivo Narrow', 'Roboto Condensed',
+    ui-sans-serif, system-ui, sans-serif;
+
+  /* Institutional, human palette — dark green anchor from the Arakis mark,
+     warm off-white surface, muted status colors. No neon, no gradients. */
+  --color-ink: #14201a;
+  --color-ink-soft: #2c3830;
+  --color-paper: #f6f7f2;
+  --color-surface: #ffffff;
+  --color-border: #dbdfd5;
+  --color-border-strong: #14201a;
+  --color-muted: #6a7469;
+
+  --color-brand-green: #4b8a3f;
+  --color-brand-green-dark: #3a6e30;
+  --color-brand-yellow: #e3c23c;
+
+  --color-status-active: #3a6e30;
+  --color-status-active-bg: #e7efe2;
+  --color-status-warning: #a5761f;
+  --color-status-warning-bg: #f6ecd6;
+  --color-status-danger: #a3352c;
+  --color-status-danger-bg: #f4e2df;
+
+  --text-body: 15px;
+  --text-body--line-height: 1.2;
+  --text-secondary: 18px;
+  --text-secondary--line-height: 1.1;
+  --text-subheading: 26px;
+  --text-subheading--line-height: 1;
+  --text-heading: clamp(2.25rem, 5vw + 1rem, 3.75rem);
+  --text-heading--line-height: 0.8;
+}
+
+@layer base {
+  * {
+    border-color: var(--color-border);
+  }
+
+  html {
+    font-family: var(--font-sans);
+    font-weight: 400;
+    -webkit-font-smoothing: antialiased;
+  }
+
+  body {
+    background-color: var(--color-paper);
+    color: var(--color-ink);
+    font-size: var(--text-body);
+    line-height: var(--text-body--line-height);
+  }
+
+  h1,
+  h2,
+  h3 {
+    letter-spacing: -0.03em;
+    font-weight: 400;
+  }
+}
