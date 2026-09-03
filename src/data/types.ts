@@ -108,3 +108,30 @@ export interface AccidentClaimSubmission {
   description: string
   evidenceFiles: string[]
 }
+
+// --- Disaster / parametric protection ----------------------------------
+
+export type DisasterEventType = 'flood'
+
+export type OracleStatus = 'verified' | 'pending'
+
+export interface DisasterFlowStep {
+  id: string
+  label: string
+  description: string
+}
+
+export interface DisasterEvent {
+  id: string
+  type: DisasterEventType
+  location: string
+  measuredLevel: number
+  triggerThreshold: number
+  unit: string
+  secondaryConfirmation: boolean
+  oracleStatus: OracleStatus
+  eligiblePolicies: number
+  totalPayoutAuthorized: number
+  currency: string
+  flow: DisasterFlowStep[]
+}
