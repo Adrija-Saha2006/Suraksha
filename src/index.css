@@ -4,27 +4,29 @@
   --font-sans:
     'KH Teka', 'Barlow Condensed', 'Archivo Narrow', 'Roboto Condensed',
     ui-sans-serif, system-ui, sans-serif;
+  --font-serif: 'Fraunces', 'Georgia', 'Times New Roman', serif;
 
-  /* Institutional, human palette — dark green anchor from the Arakis mark,
-     warm off-white surface, muted status colors. No neon, no gradients. */
-  --color-ink: #14201a;
-  --color-ink-soft: #2c3830;
-  --color-paper: #f6f7f2;
+  /* Sage / cream editorial palette (Lombok reference) — soft sage
+     backgrounds, warm cream paper, charcoal-sage ink, muted earthy
+     status colors. No neon, no gradients. */
+  --color-ink: #37453a;
+  --color-ink-soft: #55665a;
+  --color-paper: #eef2e7;
   --color-surface: #ffffff;
-  --color-border: #dbdfd5;
-  --color-border-strong: #14201a;
-  --color-muted: #6a7469;
+  --color-border: #d9e1d0;
+  --color-border-strong: #37453a;
+  --color-muted: #74836c;
 
-  --color-brand-green: #4b8a3f;
-  --color-brand-green-dark: #3a6e30;
-  --color-brand-yellow: #e3c23c;
+  --color-brand-green: #7c9873;
+  --color-brand-green-dark: #52694b;
+  --color-brand-yellow: #a9c79c;
 
-  --color-status-active: #3a6e30;
-  --color-status-active-bg: #e7efe2;
-  --color-status-warning: #a5761f;
-  --color-status-warning-bg: #f6ecd6;
-  --color-status-danger: #a3352c;
-  --color-status-danger-bg: #f4e2df;
+  --color-status-active: #4f7a46;
+  --color-status-active-bg: #e4ebdd;
+  --color-status-warning: #9c7a3d;
+  --color-status-warning-bg: #f1e8d3;
+  --color-status-danger: #a24b3e;
+  --color-status-danger-bg: #f3e0db;
 
   --text-body: 15px;
   --text-body--line-height: 1.2;
@@ -57,6 +59,7 @@
   h1,
   h2,
   h3 {
+    font-family: var(--font-serif);
     letter-spacing: -0.03em;
     font-weight: 400;
   }
