@@ -1,4 +1,4 @@
-# Arakis
+# SurakhsChain
 
 Insurance/fintech dashboard for Suraksha. Built with React, TypeScript, Vite and Tailwind CSS v4.
 
