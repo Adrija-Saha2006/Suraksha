@@ -12,9 +12,11 @@ const labelClass = 'text-[15px] leading-[1.2] text-muted'
 
 interface AccidentClaimFormProps {
   onSubmit: (input: AccidentClaimSubmission) => void
+  isSubmitting: boolean
+  submitError: string | null
 }
 
-export function AccidentClaimForm({ onSubmit }: AccidentClaimFormProps) {
+export function AccidentClaimForm({ onSubmit, isSubmitting, submitError }: AccidentClaimFormProps) {
   const { data } = useDashboardData()
   const policy = data?.policy
 
@@ -29,7 +31,7 @@ export function AccidentClaimForm({ onSubmit }: AccidentClaimFormProps) {
   const [evidenceFiles, setEvidenceFiles] = useState<string[]>([])
 
   const today = isoDaysAgo(0)
-  const canSubmit = Boolean(policy && location.trim() && description.trim())
+  const canSubmit = Boolean(policy && location.trim() && description.trim() && !isSubmitting)
 
   function handleSubmit(event: FormEvent) {
     event.preventDefault()
@@ -135,12 +137,16 @@ export function AccidentClaimForm({ onSubmit }: AccidentClaimFormProps) {
         )}
       </div>
 
+      {submitError && (
+        <p className="text-[15px] leading-[1.2] text-status-danger">{submitError}</p>
+      )}
+
       <button
         type="submit"
         disabled={!canSubmit}
         className="inline-flex w-fit items-center justify-center rounded-full border border-status-danger bg-status-danger px-[24px] py-[10px] text-[15px] leading-[1.2] text-paper transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
       >
-        Submit Claim
+        {isSubmitting ? 'Submitting…' : 'Submit Claim'}
       </button>
     </form>
   )

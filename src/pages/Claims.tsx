@@ -1,54 +1,35 @@
 import { useState } from 'react'
-import { useSearchParams } from 'react-router-dom'
+import { useNavigate, useSearchParams } from 'react-router-dom'
 
 import { AccidentClaimForm } from '../components/claims/AccidentClaimForm'
-import { ClaimHeader } from '../components/claims/ClaimHeader'
-import { ClaimIncidentSummary } from '../components/claims/ClaimIncidentSummary'
-import { ClaimPayoutSummary } from '../components/claims/ClaimPayoutSummary'
-import { ClaimTimeline } from '../components/claims/ClaimTimeline'
-import { ClaimTransactions } from '../components/claims/ClaimTransactions'
 import { ClaimTypeComingSoon } from '../components/claims/ClaimTypeComingSoon'
 import { ClaimTypeSelector } from '../components/claims/ClaimTypeSelector'
 import { SectionHeading } from '../components/common/SectionHeading'
 import { submitAccidentClaim } from '../data/mockClaims'
-import type { AccidentClaimSubmission, Claim, ClaimType } from '../data/types'
+import type { AccidentClaimSubmission, ClaimType } from '../data/types'
 import { claimTypeLabels, isClaimType } from '../lib/claims'
 
 export default function Claims() {
+  const navigate = useNavigate()
   const [searchParams] = useSearchParams()
   const requestedType = searchParams.get('type')
 
   const [claimType, setClaimType] = useState<ClaimType | null>(
     isClaimType(requestedType) ? requestedType : null,
   )
-  const [claim, setClaim] = useState<Claim | null>(null)
+  const [isSubmitting, setIsSubmitting] = useState(false)
+  const [submitError, setSubmitError] = useState<string | null>(null)
 
-  function handleAccidentSubmit(input: AccidentClaimSubmission) {
-    setClaim(submitAccidentClaim(input))
-  }
-
-  function handleFileAnother() {
-    setClaim(null)
-    setClaimType(null)
-  }
-
-  if (claim) {
-    return (
-      <div className="flex flex-col gap-[40px]">
-        <ClaimHeader claim={claim} />
-        <ClaimIncidentSummary claim={claim} />
-        <ClaimTimeline steps={claim.timeline} />
-        <ClaimPayoutSummary claim={claim} />
-        <ClaimTransactions transactions={claim.transactions} currency={claim.currency} />
-        <button
-          type="button"
-          onClick={handleFileAnother}
-          className="inline-flex w-fit items-center justify-center rounded-full border border-ink px-[20px] py-[10px] text-[15px] leading-[1.2] text-ink transition-colors hover:bg-ink hover:text-paper"
-        >
-          File another claim
-        </button>
-      </div>
-    )
+  async function handleAccidentSubmit(input: AccidentClaimSubmission) {
+    setIsSubmitting(true)
+    setSubmitError(null)
+    try {
+      const claim = await submitAccidentClaim(input)
+      navigate(`/claims/${claim.id}`)
+    } catch {
+      setSubmitError('Something went wrong submitting your claim. Please try again.')
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -66,7 +47,13 @@ export default function Claims() {
         <ClaimTypeSelector value={claimType} onChange={setClaimType} />
       </section>
 
-      {claimType === 'accident' && <AccidentClaimForm onSubmit={handleAccidentSubmit} />}
+      {claimType === 'accident' && (
+        <AccidentClaimForm
+          onSubmit={handleAccidentSubmit}
+          isSubmitting={isSubmitting}
+          submitError={submitError}
+        />
+      )}
       {claimType && claimType !== 'accident' && (
         <ClaimTypeComingSoon label={claimTypeLabels[claimType]} />
       )}

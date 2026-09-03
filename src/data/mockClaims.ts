@@ -1,11 +1,19 @@
+import { mockDashboardData } from './mockData'
 import { isoDaysAgo } from '../lib/format'
 import type { AccidentClaimSubmission, Claim, ClaimTimelineStep } from './types'
 
-// Standing in for a future POST /api/claims response. A real backend would
-// return exactly this shape (or close to it) once verification is under
-// way, so components read claim.timeline / claim.transactions rather than
-// any status string — swapping this for a live claim record is a one-file
-// change, same as the dashboard's mock data layer.
+// Standing in for a future claims API. submitAccidentClaim() ~ POST
+// /api/claims, fetchClaim() ~ GET /api/claims/:id. Both are already async
+// and return promises the way a real fetch would, and useClaim() (see
+// useClaim.ts) already polls fetchClaim() on an interval — so pointing
+// these two functions at real endpoints is the only change needed for the
+// Claims page to show live backend data, submission failures included.
+
+const SIMULATED_LATENCY_MS = 350
+
+function delay<T>(value: T): Promise<T> {
+  return new Promise((resolve) => setTimeout(() => resolve(value), SIMULATED_LATENCY_MS))
+}
 
 function stepDate(incidentDateIso: string, offsetDays: number): string {
   const incident = new Date(incidentDateIso)
@@ -86,16 +94,16 @@ function buildTimeline(incidentDateIso: string): ClaimTimelineStep[] {
   ]
 }
 
-export function submitAccidentClaim(input: AccidentClaimSubmission): Claim {
+function buildAccidentClaim(id: string, input: AccidentClaimSubmission): Claim {
   const amount = 100000
   const emergencyAdvance = 10000
   const finalPayout = 90000
   const timeline = buildTimeline(input.incidentDate)
-  const advanceSettledAt = timeline.find((step) => step.id === 'stellar_settlement')?.date
-    ?? input.incidentDate
+  const advanceSettledAt =
+    timeline.find((step) => step.id === 'stellar_settlement')?.date ?? input.incidentDate
 
   return {
-    id: 'SC-48291',
+    id,
     type: 'accident',
     status: 'partially_paid',
     policyId: input.policyId,
@@ -121,10 +129,29 @@ export function submitAccidentClaim(input: AccidentClaimSubmission): Claim {
   }
 }
 
-export const defaultAccidentClaimSubmission: AccidentClaimSubmission = {
-  policyId: '',
+// In-memory stand-in for a claims table. Keyed by claim id so fetchClaim()
+// has something to look up — a real backend replaces this Map entirely.
+const claimStore = new Map<string, Claim>()
+
+const demoSubmission: AccidentClaimSubmission = {
+  policyId: mockDashboardData.policy.id,
   incidentDate: isoDaysAgo(4),
-  location: '',
-  description: '',
-  evidenceFiles: [],
+  location: 'MG Road, Bengaluru',
+  description: 'Rear-ended at a signal; treated for minor whiplash at Apollo Hospital.',
+  evidenceFiles: ['discharge_summary.pdf', 'fir_copy.pdf'],
+}
+claimStore.set('SC-48291', buildAccidentClaim('SC-48291', demoSubmission))
+
+export async function submitAccidentClaim(input: AccidentClaimSubmission): Promise<Claim> {
+  const claim = buildAccidentClaim('SC-48291', input)
+  claimStore.set(claim.id, claim)
+  return delay(claim)
+}
+
+export async function fetchClaim(claimId: string): Promise<Claim> {
+  const claim = claimStore.get(claimId)
+  if (!claim) {
+    return Promise.reject(new Error(`Claim ${claimId} not found`))
+  }
+  return delay(claim)
 }
