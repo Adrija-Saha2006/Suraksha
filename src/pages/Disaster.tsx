@@ -7,12 +7,12 @@ import { FloodEventCard } from '../components/disaster/FloodEventCard'
 import { FloodLevelGauge } from '../components/disaster/FloodLevelGauge'
 import { NoClaimRequiredNotice } from '../components/disaster/NoClaimRequiredNotice'
 import { ParametricPayoutSummary } from '../components/disaster/ParametricPayoutSummary'
+import { useDisasterEvent } from '../components/disaster/useDisasterEvent'
 import { useFloodSimulation } from '../components/disaster/useFloodSimulation'
-import { mockFloodEvent } from '../data/mockDisasterEvent'
 import { formatCurrency } from '../lib/format'
 
 export default function Disaster() {
-  const event = mockFloodEvent
+  const { data: event } = useDisasterEvent()
   const { phase, hasStarted, start, statusFor, activeStepLabel } = useFloodSimulation(event.flow)
 
   const buttonLabel =

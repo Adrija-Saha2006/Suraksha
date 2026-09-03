@@ -4,8 +4,10 @@ import { useNavigate, useSearchParams } from 'react-router-dom'
 import { AccidentClaimForm } from '../components/claims/AccidentClaimForm'
 import { ClaimTypeComingSoon } from '../components/claims/ClaimTypeComingSoon'
 import { ClaimTypeSelector } from '../components/claims/ClaimTypeSelector'
+import { FloodClaimForm } from '../components/claims/FloodClaimForm'
 import { SectionHeading } from '../components/common/SectionHeading'
 import { submitAccidentClaim } from '../data/mockClaims'
+import { reportFloodLocation } from '../data/mockDisasterEvent'
 import type { AccidentClaimSubmission, ClaimType } from '../data/types'
 import { claimTypeLabels, isClaimType } from '../lib/claims'
 
@@ -32,6 +34,11 @@ export default function Claims() {
     }
   }
 
+  function handleFloodSubmit(location: string) {
+    reportFloodLocation(location)
+    navigate('/disaster')
+  }
+
   return (
     <div className="flex flex-col gap-[40px]">
       <div className="flex flex-col gap-[10px]">
@@ -54,9 +61,8 @@ export default function Claims() {
           submitError={submitError}
         />
       )}
-      {claimType && claimType !== 'accident' && (
-        <ClaimTypeComingSoon label={claimTypeLabels[claimType]} />
-      )}
+      {claimType === 'flood' && <FloodClaimForm onSubmit={handleFloodSubmit} />}
+      {claimType === 'death' && <ClaimTypeComingSoon label={claimTypeLabels.death} />}
     </div>
   )
 }
