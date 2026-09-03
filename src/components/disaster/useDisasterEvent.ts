@@ -1,23 +1,49 @@
-import { useState } from 'react'
+import { useEffect, useState } from 'react'
 
-import { getCurrentFloodEvent } from '../../data/mockDisasterEvent'
+import { fetchCurrentFloodEvent } from '../../data/mockDisasterEvent'
 import type { DisasterEvent } from '../../data/types'
 
 interface DisasterEventResult {
-  data: DisasterEvent
+  data: DisasterEvent | undefined
   isLoading: boolean
-  error: null
+  error: Error | null
 }
 
 /**
- * Single access point for the current disaster event. Reads whichever
- * location was most recently reported via the Claims page's Flood flow,
- * captured once at mount (a fresh navigation to /disaster mounts this
- * again, picking up any newly reported location). Swapping this for a
- * real `GET /api/disaster-events/current` call is the only change needed
- * once a backend exists.
+ * Single access point for the current disaster event. Fetches once on
+ * mount via fetchCurrentFloodEvent() (which already reads whichever
+ * location was most recently reported via the Claims page's Flood flow)
+ * — swapping that function's body for a real
+ * `GET /api/disaster-events/current` call is the only change needed
+ * once a backend exists; this hook's loading/error handling already
+ * matches what a real fetch needs.
  */
 export function useDisasterEvent(): DisasterEventResult {
-  const [data] = useState<DisasterEvent>(() => getCurrentFloodEvent())
-  return { data, isLoading: false, error: null }
+  const [data, setData] = useState<DisasterEvent | undefined>(undefined)
+  const [isLoading, setIsLoading] = useState(true)
+  const [error, setError] = useState<Error | null>(null)
+
+  useEffect(() => {
+    let cancelled = false
+
+    fetchCurrentFloodEvent()
+      .then((event) => {
+        if (cancelled) return
+        setData(event)
+        setError(null)
+      })
+      .catch((err) => {
+        if (cancelled) return
+        setError(err instanceof Error ? err : new Error('Failed to load disaster event'))
+      })
+      .finally(() => {
+        if (!cancelled) setIsLoading(false)
+      })
+
+    return () => {
+      cancelled = true
+    }
+  }, [])
+
+  return { data, isLoading, error }
 }

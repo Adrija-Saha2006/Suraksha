@@ -9,16 +9,18 @@ const labelClass = 'text-[15px] leading-[1.2] text-muted'
 
 interface FloodClaimFormProps {
   onSubmit: (location: string) => void
+  isSubmitting: boolean
+  submitError: string | null
 }
 
-export function FloodClaimForm({ onSubmit }: FloodClaimFormProps) {
+export function FloodClaimForm({ onSubmit, isSubmitting, submitError }: FloodClaimFormProps) {
   const { data } = useDashboardData()
   const policy = data?.policy
 
   const locationId = useId()
   const [location, setLocation] = useState('')
 
-  const canSubmit = Boolean(policy && location.trim())
+  const canSubmit = Boolean(policy && location.trim() && !isSubmitting)
 
   function handleSubmit(event: FormEvent) {
     event.preventDefault()
@@ -58,12 +60,16 @@ export function FloodClaimForm({ onSubmit }: FloodClaimFormProps) {
         instead of filing a claim. If a qualifying event is confirmed, payout is automatic.
       </p>
 
+      {submitError && (
+        <p className="text-[15px] leading-[1.2] text-status-danger">{submitError}</p>
+      )}
+
       <button
         type="submit"
         disabled={!canSubmit}
         className="inline-flex w-fit items-center justify-center rounded-full border border-ink bg-ink px-[24px] py-[10px] text-[15px] leading-[1.2] text-paper transition-colors hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-40"
       >
-        Check Flood Status
+        {isSubmitting ? 'Checking…' : 'Check Flood Status'}
       </button>
     </form>
   )

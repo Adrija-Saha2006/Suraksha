@@ -155,3 +155,12 @@ export async function fetchClaim(claimId: string): Promise<Claim> {
   }
   return delay(claim)
 }
+
+// Synchronous, no simulated latency — for other mock modules (e.g.
+// mockOperations.ts) that need to read the current claim record without
+// going through the async claim-tracking flow. Both are reading the same
+// in-memory store a real backend would replace with one database, so a
+// claim resubmitted here is reflected wherever it's read from next.
+export function getClaimSnapshot(claimId: string): Claim | undefined {
+  return claimStore.get(claimId)
+}

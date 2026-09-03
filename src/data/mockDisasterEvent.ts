@@ -4,6 +4,12 @@ import type { DisasterEvent, DisasterFlowStep } from './types'
 // been reported — see reportFloodLocation() below.
 const DEFAULT_LOCATION = 'Nadia District'
 
+const SIMULATED_LATENCY_MS = 300
+
+function delay<T>(value: T): Promise<T> {
+  return new Promise((resolve) => setTimeout(() => resolve(value), SIMULATED_LATENCY_MS))
+}
+
 // Static process copy, written generically (no restated figures) so it
 // can't drift out of sync with the numbers shown elsewhere on the page.
 const FLOW_STEPS: DisasterFlowStep[] = [
@@ -67,10 +73,17 @@ function buildFloodEvent(location: string): DisasterEvent {
 // backend replaces this with a live feed of verified events.
 let reportedLocation: string | null = null
 
-export function reportFloodLocation(location: string): void {
+// ~ POST /api/disaster-events/report. Async and latency-simulated like
+// mockClaims.ts's submitAccidentClaim(), so the Claims page's Flood form
+// already exercises a real submitting/error UI ahead of a live endpoint.
+export async function reportFloodLocation(location: string): Promise<void> {
   reportedLocation = location
+  await delay(undefined)
 }
 
-export function getCurrentFloodEvent(): DisasterEvent {
-  return buildFloodEvent(reportedLocation ?? DEFAULT_LOCATION)
+// ~ GET /api/disaster-events/current. Async and latency-simulated so
+// useDisasterEvent() already exercises real loading/error states —
+// pointing this at a real endpoint is the only change needed later.
+export async function fetchCurrentFloodEvent(): Promise<DisasterEvent> {
+  return delay(buildFloodEvent(reportedLocation ?? DEFAULT_LOCATION))
 }

@@ -29,6 +29,11 @@ export function getGreeting(hour: number = new Date().getHours()): string {
   return 'Good evening'
 }
 
+export function formatCompactINR(amount: number): string {
+  const lakhs = Math.round((amount / 100000) * 10) / 10
+  return `₹${lakhs}L`
+}
+
 export function isoDaysAgo(days: number): string {
   const d = new Date()
   d.setDate(d.getDate() - days)

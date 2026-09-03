@@ -3,6 +3,7 @@ import { CheckCircle2 } from 'lucide-react'
 import { Card } from '../components/common/Card'
 import { SectionHeading } from '../components/common/SectionHeading'
 import { DisasterFlow } from '../components/disaster/DisasterFlow'
+import { DisasterSkeleton } from '../components/disaster/DisasterSkeleton'
 import { FloodEventCard } from '../components/disaster/FloodEventCard'
 import { FloodLevelGauge } from '../components/disaster/FloodLevelGauge'
 import { NoClaimRequiredNotice } from '../components/disaster/NoClaimRequiredNotice'
@@ -10,10 +11,23 @@ import { ParametricPayoutSummary } from '../components/disaster/ParametricPayout
 import { useDisasterEvent } from '../components/disaster/useDisasterEvent'
 import { useFloodSimulation } from '../components/disaster/useFloodSimulation'
 import { formatCurrency } from '../lib/format'
+import { ComingSoon } from './ComingSoon'
 
 export default function Disaster() {
-  const { data: event } = useDisasterEvent()
-  const { phase, hasStarted, start, statusFor, activeStepLabel } = useFloodSimulation(event.flow)
+  const { data: event, isLoading, error } = useDisasterEvent()
+  const { phase, hasStarted, start, statusFor, activeStepLabel } = useFloodSimulation(event?.flow ?? [])
+
+  if (isLoading) return <DisasterSkeleton />
+
+  if (error || !event) {
+    return (
+      <ComingSoon
+        eyebrow="Unavailable"
+        title="Couldn't load this event"
+        description="We weren't able to reach the disaster monitoring service. Please refresh the page or try again shortly."
+      />
+    )
+  }
 
   const buttonLabel =
     phase === 'running' ? 'Simulating…' : phase === 'complete' ? 'Simulate again' : 'Simulate Flood Event'

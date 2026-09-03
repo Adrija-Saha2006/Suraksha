@@ -135,3 +135,75 @@ export interface DisasterEvent {
   currency: string
   flow: DisasterFlowStep[]
 }
+
+// --- Operations (insurer/admin control center) --------------------------
+
+export interface OperationsKpis {
+  activePolicies: number
+  activeClaims: number
+  awaitingVerification: number
+  todaysPayouts: number
+  treasuryBalance: number
+  currency: string
+}
+
+export type OperationsClaimStatus = 'advance_paid' | 'pending' | 'paid' | 'rejected'
+
+export interface OperationsClaim {
+  id: string
+  type: ClaimType
+  amount: number
+  currency: string
+  verifiedCount: number
+  totalSources: number
+  status: OperationsClaimStatus
+}
+
+export interface OracleSource {
+  id: string
+  name: string
+  verified: boolean
+}
+
+export type FundingStatus = 'funded' | 'pending'
+export type StellarSettlementStatus = 'confirmed' | 'pending'
+export type PayoutStatus = 'paid' | 'pending'
+
+export interface Payout {
+  id: string
+  claimId: string
+  amount: number
+  currency: string
+  funding: FundingStatus
+  stellarStatus: StellarSettlementStatus
+  stellarReference: string | null
+  status: PayoutStatus
+}
+
+export interface Treasury {
+  availableBalance: number
+  reservedBalance: number
+  currency: string
+  fundingProvider: string
+  pendingFunding: number
+}
+
+export interface AuditTransaction {
+  id: string
+  claimId: string
+  amount: number
+  currency: string
+  network: string
+  status: StellarSettlementStatus
+  reference: string
+  date: string // ISO date
+}
+
+export interface OperationsData {
+  kpis: OperationsKpis
+  claims: OperationsClaim[]
+  oracleSources: OracleSource[]
+  payouts: Payout[]
+  treasury: Treasury
+  transactions: AuditTransaction[]
+}

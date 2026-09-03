@@ -34,9 +34,16 @@ export default function Claims() {
     }
   }
 
-  function handleFloodSubmit(location: string) {
-    reportFloodLocation(location)
-    navigate('/disaster')
+  async function handleFloodSubmit(location: string) {
+    setIsSubmitting(true)
+    setSubmitError(null)
+    try {
+      await reportFloodLocation(location)
+      navigate('/disaster')
+    } catch {
+      setSubmitError('Something went wrong checking that location. Please try again.')
+      setIsSubmitting(false)
+    }
   }
 
   return (
@@ -61,7 +68,13 @@ export default function Claims() {
           submitError={submitError}
         />
       )}
-      {claimType === 'flood' && <FloodClaimForm onSubmit={handleFloodSubmit} />}
+      {claimType === 'flood' && (
+        <FloodClaimForm
+          onSubmit={handleFloodSubmit}
+          isSubmitting={isSubmitting}
+          submitError={submitError}
+        />
+      )}
       {claimType === 'death' && <ClaimTypeComingSoon label={claimTypeLabels.death} />}
     </div>
   )
