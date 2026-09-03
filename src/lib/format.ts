@@ -29,6 +29,17 @@ export function getGreeting(hour: number = new Date().getHours()): string {
   return 'Good evening'
 }
 
+export function isoDaysAgo(days: number): string {
+  const d = new Date()
+  d.setDate(d.getDate() - days)
+  return d.toISOString().slice(0, 10)
+}
+
+export function truncateMiddle(value: string, front: number = 6, back: number = 6): string {
+  if (value.length <= front + back + 1) return value
+  return `${value.slice(0, front)}…${value.slice(-back)}`
+}
+
 export function timeAgo(iso: string): string {
   const msPerDay = 1000 * 60 * 60 * 24
   const days = Math.round((Date.now() - new Date(iso).getTime()) / msPerDay)

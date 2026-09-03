@@ -26,10 +26,10 @@ function ActionButton({ to, variant, children }: ActionButtonProps) {
 export function QuickActions() {
   return (
     <div className="flex flex-wrap gap-[10px]">
-      <ActionButton to="/claims" variant="primary">
+      <ActionButton to="/claims?type=accident" variant="primary">
         Report Accident
       </ActionButton>
-      <ActionButton to="/claims" variant="secondary">
+      <ActionButton to="/claims?type=death" variant="secondary">
         Report Death
       </ActionButton>
       <ActionButton to="/operations" variant="outline">

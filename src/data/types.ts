@@ -53,3 +53,58 @@ export interface DashboardData {
   nominee: Nominee
   recentActivity: ActivityItem[]
 }
+
+// --- Claims -----------------------------------------------------------
+
+export type ClaimType = 'accident' | 'death' | 'flood'
+
+export type ClaimStatus =
+  | 'submitted'
+  | 'in_verification'
+  | 'partially_paid'
+  | 'settled'
+  | 'rejected'
+
+export type ClaimStepStatus = 'complete' | 'current' | 'upcoming'
+
+export interface ClaimTimelineStep {
+  id: string
+  label: string
+  status: ClaimStepStatus
+  description: string
+  date: string | null // ISO date once the step completes, else null
+}
+
+export interface ClaimTransaction {
+  id: string
+  label: string
+  amount: number
+  reference: string
+  network: string
+  date: string // ISO date
+}
+
+export interface Claim {
+  id: string
+  type: ClaimType
+  status: ClaimStatus
+  policyId: string
+  incidentDate: string // ISO date
+  location: string
+  description: string
+  evidenceFiles: string[]
+  amount: number
+  currency: string
+  emergencyAdvance: number
+  finalPayout: number
+  timeline: ClaimTimelineStep[]
+  transactions: ClaimTransaction[]
+}
+
+export interface AccidentClaimSubmission {
+  policyId: string
+  incidentDate: string
+  location: string
+  description: string
+  evidenceFiles: string[]
+}
